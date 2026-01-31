@@ -5,6 +5,7 @@ import { Shield, Award, Moon, ArrowRight, Check } from 'lucide-react'
 import { PageTransition, fadeInUp, staggerContainer } from '@/components/effects/PageTransition'
 import { Button } from '@/components/ui/Button'
 import { companyInfo } from '@/data/content'
+import { images } from '@/data/images'
 
 const certifications = [
   {
@@ -105,27 +106,47 @@ export default function AboutPage() {
                   From surveying vast farmlands to capturing cinematic footage of our stunning coastlines, every project we undertake reflects our commitment to quality, safety, and professionalism.
                 </p>
               </div>
+
+              {/* Image */}
+              <div className="mt-8 rounded-2xl overflow-hidden">
+                <img
+                  src={images.portfolio[3]}
+                  alt="Aerial view of Canterbury"
+                  className="w-full h-64 object-cover"
+                />
+              </div>
             </motion.div>
 
             <motion.div
               initial={{ opacity: 0, x: 30 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
-              className="grid grid-cols-2 gap-4"
+              className="space-y-4"
             >
-              {companyInfo.stats.map((stat, index) => (
-                <div
-                  key={stat.label}
-                  className={`bg-dark-card border border-dark-border rounded-2xl p-6 text-center ${
-                    index === 0 ? 'col-span-2' : ''
-                  }`}
-                >
-                  <div className="text-4xl font-display font-bold text-gradient mb-2">
-                    {stat.value}{stat.suffix}
+              {/* Featured image */}
+              <div className="rounded-2xl overflow-hidden mb-6">
+                <img
+                  src={images.portfolio[4]}
+                  alt="Drone operations"
+                  className="w-full h-48 object-cover"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                {companyInfo.stats.map((stat, index) => (
+                  <div
+                    key={stat.label}
+                    className={`bg-dark-card border border-dark-border rounded-2xl p-6 text-center ${
+                      index === 0 ? 'col-span-2' : ''
+                    }`}
+                  >
+                    <div className="text-4xl font-display font-bold text-gradient mb-2">
+                      {stat.value}{stat.suffix}
+                    </div>
+                    <div className="text-white/60 text-sm">{stat.label}</div>
                   </div>
-                  <div className="text-white/60 text-sm">{stat.label}</div>
-                </div>
-              ))}
+                ))}
+              </div>
             </motion.div>
           </div>
         </div>
@@ -146,6 +167,20 @@ export default function AboutPage() {
             <p className="text-white/60 max-w-2xl mx-auto">
               We maintain the highest standards of safety and compliance in all our operations.
             </p>
+          </motion.div>
+
+          {/* CAA Logo */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="flex justify-center mb-12"
+          >
+            <img
+              src={images.caaLogo}
+              alt="Civil Aviation Authority New Zealand"
+              className="h-24 object-contain"
+            />
           </motion.div>
 
           <div className="grid md:grid-cols-3 gap-6">

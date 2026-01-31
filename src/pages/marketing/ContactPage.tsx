@@ -9,6 +9,7 @@ import { PageTransition, fadeInUp, staggerContainer } from '@/components/effects
 import { Button } from '@/components/ui/Button'
 import { companyInfo } from '@/data/content'
 import { services } from '@/data/services'
+import { images } from '@/data/images'
 
 const contactSchema = z.object({
   name: z.string().min(2, 'Name is required'),
@@ -56,7 +57,15 @@ export default function ContactPage() {
 
       {/* Hero */}
       <section className="pt-32 pb-16 bg-dark relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-b from-accent-blue/5 to-transparent" />
+        {/* Background image */}
+        <div className="absolute inset-0">
+          <img
+            src={images.portfolio[1]}
+            alt=""
+            className="w-full h-full object-cover opacity-15"
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-dark via-dark/90 to-dark" />
+        </div>
 
         <div className="container mx-auto px-4 relative">
           <motion.div

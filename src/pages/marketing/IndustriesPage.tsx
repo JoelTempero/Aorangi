@@ -15,6 +15,7 @@ import {
 import { PageTransition, fadeInUp, staggerContainer } from '@/components/effects/PageTransition'
 import { Button } from '@/components/ui/Button'
 import { industries } from '@/data/industries'
+import { images } from '@/data/images'
 
 const iconMap: Record<string, React.ReactNode> = {
   Wheat: <Wheat className="w-8 h-8" />,
@@ -40,7 +41,15 @@ export default function IndustriesPage() {
 
       {/* Hero */}
       <section className="pt-32 pb-16 bg-dark relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-b from-accent-purple/5 to-transparent" />
+        {/* Background image */}
+        <div className="absolute inset-0">
+          <img
+            src={images.portfolio[2]}
+            alt=""
+            className="w-full h-full object-cover opacity-15"
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-dark via-dark/90 to-dark" />
+        </div>
 
         <div className="container mx-auto px-4 relative">
           <motion.div

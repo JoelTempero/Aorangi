@@ -6,6 +6,7 @@ import { PageTransition, fadeInUp, staggerContainer } from '@/components/effects
 import { ServiceCard } from '@/components/sections/ServiceCard'
 import { Button } from '@/components/ui/Button'
 import { services } from '@/data/services'
+import { images } from '@/data/images'
 
 export default function ServicesPage() {
   return (
@@ -20,31 +21,60 @@ export default function ServicesPage() {
 
       {/* Hero */}
       <section className="pt-32 pb-16 bg-dark relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-b from-accent-blue/5 to-transparent" />
+        {/* Background image */}
+        <div className="absolute inset-0">
+          <img
+            src={images.servicesBackground}
+            alt=""
+            className="w-full h-full object-cover opacity-20"
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-dark via-dark/90 to-dark" />
+        </div>
 
         <div className="container mx-auto px-4 relative">
-          <motion.div
-            variants={staggerContainer}
-            initial="initial"
-            animate="enter"
-            className="max-w-3xl"
-          >
-            <motion.span
-              variants={fadeInUp}
-              className="text-accent-blue text-sm font-medium uppercase tracking-wider"
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            <motion.div
+              variants={staggerContainer}
+              initial="initial"
+              animate="enter"
             >
-              Our Services
-            </motion.span>
-            <motion.h1
-              variants={fadeInUp}
-              className="heading-display text-5xl sm:text-6xl text-white mt-4 mb-6"
+              <motion.span
+                variants={fadeInUp}
+                className="text-accent-blue text-sm font-medium uppercase tracking-wider"
+              >
+                Our Services
+              </motion.span>
+              <motion.h1
+                variants={fadeInUp}
+                className="heading-display text-5xl sm:text-6xl text-white mt-4 mb-6"
+              >
+                Professional Drone Solutions
+              </motion.h1>
+              <motion.p variants={fadeInUp} className="text-white/60 text-xl">
+                Safe, compliant and efficient aerial solutions. We combine advanced technology with expert operators to deliver exceptional results across a wide range of applications.
+              </motion.p>
+            </motion.div>
+
+            {/* Hero image */}
+            <motion.div
+              initial={{ opacity: 0, x: 30 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.3 }}
+              className="hidden lg:block"
             >
-              Professional Drone Solutions
-            </motion.h1>
-            <motion.p variants={fadeInUp} className="text-white/60 text-xl">
-              Safe, compliant and efficient aerial solutions. We combine advanced technology with expert operators to deliver exceptional results across a wide range of applications.
-            </motion.p>
-          </motion.div>
+              <div className="relative">
+                <img
+                  src={images.portfolio[0]}
+                  alt="Drone aerial photography"
+                  className="rounded-2xl shadow-2xl"
+                />
+                <div className="absolute -bottom-4 -left-4 bg-dark-card border border-dark-border rounded-xl p-4">
+                  <p className="text-accent-blue font-display font-semibold">7+ Services</p>
+                  <p className="text-white/60 text-sm">Professional solutions</p>
+                </div>
+              </div>
+            </motion.div>
+          </div>
         </div>
       </section>
 

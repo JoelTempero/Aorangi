@@ -98,13 +98,15 @@ export default function PortfolioPage() {
                   className="group cursor-pointer"
                 >
                   <div className="relative aspect-[4/3] rounded-2xl overflow-hidden bg-dark-card">
-                    {/* Placeholder image */}
-                    <div className="absolute inset-0 bg-gradient-to-br from-accent-blue/20 to-accent-purple/20 flex items-center justify-center">
-                      <span className="text-white/20 text-sm">[Project Image]</span>
-                    </div>
+                    {/* Actual image */}
+                    <img
+                      src={item.images[0]}
+                      alt={item.title}
+                      className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    />
 
                     {/* Overlay */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-dark via-transparent to-transparent opacity-60 group-hover:opacity-80 transition-opacity" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-dark via-dark/20 to-transparent opacity-70 group-hover:opacity-90 transition-opacity" />
 
                     {/* Content */}
                     <div className="absolute inset-0 p-6 flex flex-col justify-end">
@@ -171,9 +173,13 @@ export default function PortfolioPage() {
                 <X className="w-5 h-5" />
               </button>
 
-              {/* Image placeholder */}
-              <div className="aspect-video bg-gradient-to-br from-accent-blue/20 to-accent-purple/20 flex items-center justify-center">
-                <span className="text-white/20">[Project Gallery]</span>
+              {/* Image */}
+              <div className="aspect-video relative">
+                <img
+                  src={selectedItem.images[0]}
+                  alt={selectedItem.title}
+                  className="w-full h-full object-cover"
+                />
               </div>
 
               {/* Content */}
