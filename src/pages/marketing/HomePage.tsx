@@ -18,6 +18,7 @@ import { services } from '@/data/services'
 import { companyInfo, whyChooseUs, testimonials } from '@/data/content'
 import { images, heroVideo } from '@/data/images'
 import { cn } from '@/lib/utils'
+import { useLoading } from '@/contexts/LoadingContext'
 
 const iconMap: Record<string, React.ReactNode> = {
   Shield: <Shield className="w-6 h-6" />,
@@ -27,6 +28,7 @@ const iconMap: Record<string, React.ReactNode> = {
 
 export default function HomePage() {
   const heroRef = useRef<HTMLDivElement>(null)
+  const { isInitialLoading } = useLoading()
   const { scrollYProgress } = useScroll({
     target: heroRef,
     offset: ['start start', 'end start'],
@@ -35,6 +37,9 @@ export default function HomePage() {
   const heroOpacity = useTransform(scrollYProgress, [0, 0.5], [1, 0])
   const heroScale = useTransform(scrollYProgress, [0, 0.5], [1, 0.95])
   const heroY = useTransform(scrollYProgress, [0, 0.5], [0, 100])
+
+  // Delay animations until loading screen is gone
+  const animationDelay = isInitialLoading ? 2.8 : 0
 
   return (
     <PageTransition>
@@ -53,21 +58,26 @@ export default function HomePage() {
       >
         {/* Video Background */}
         <motion.div
-          style={{ opacity: heroOpacity, scale: heroScale, y: heroY }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 1, delay: animationDelay - 0.3, ease: 'easeOut' }}
+          style={{ scale: heroScale, y: heroY }}
           className="absolute inset-0 z-0"
         >
-          <video
-            autoPlay
-            muted
-            loop
-            playsInline
-            poster={heroVideo.poster}
-            className="absolute inset-0 w-full h-full object-cover"
-          >
-            <source src={heroVideo.src} type="video/mp4" />
-          </video>
-          {/* Overlay gradient */}
-          <div className="absolute inset-0 bg-gradient-to-b from-dark/70 via-dark/50 to-dark" />
+          <motion.div style={{ opacity: heroOpacity }} className="absolute inset-0">
+            <video
+              autoPlay
+              muted
+              loop
+              playsInline
+              poster={heroVideo.poster}
+              className="absolute inset-0 w-full h-full object-cover"
+            >
+              <source src={heroVideo.src} type="video/mp4" />
+            </video>
+            {/* Overlay gradient */}
+            <div className="absolute inset-0 bg-gradient-to-b from-dark/70 via-dark/50 to-dark" />
+          </motion.div>
         </motion.div>
 
         {/* Content */}
@@ -76,7 +86,7 @@ export default function HomePage() {
             <motion.div
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
+              transition={{ duration: 0.8, delay: animationDelay, ease: 'easeOut' }}
             >
               {/* Badge */}
               <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-accent-blue/10 border border-accent-blue/30 mb-8">

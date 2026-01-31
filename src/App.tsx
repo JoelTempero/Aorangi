@@ -1,6 +1,6 @@
 import { Routes, Route, useLocation, Navigate } from 'react-router-dom'
 import { AnimatePresence } from 'framer-motion'
-import { Suspense, lazy, useEffect, useState } from 'react'
+import { Suspense, lazy, useEffect } from 'react'
 
 // Layout
 import MarketingLayout from './components/layout/MarketingLayout'
@@ -15,6 +15,7 @@ import { CommandPalette } from './components/ui/CommandPalette'
 import { useThemeStore } from './stores/themeStore'
 import { usePortalStore } from './stores/portalStore'
 import { useKonamiCode } from './hooks/useKonamiCode'
+import { useLoading } from './contexts/LoadingContext'
 
 // Lazy load pages for code splitting
 const HomePage = lazy(() => import('./pages/marketing/HomePage'))
@@ -53,13 +54,9 @@ function App() {
   const location = useLocation()
   const { theme, initTheme } = useThemeStore()
   const { isAuthenticated } = usePortalStore()
+  const { isInitialLoading, setLoadingComplete } = useLoading()
   const showDroneGame = useKonamiCode()
   const isPortalRoute = location.pathname.startsWith('/portal')
-  const [isInitialLoad, setIsInitialLoad] = useState(() => {
-    // Only show loading screen on first visit (not on navigation)
-    const hasVisited = sessionStorage.getItem('aorangi-visited')
-    return !hasVisited
-  })
 
   useEffect(() => {
     initTheme()
@@ -74,11 +71,6 @@ function App() {
     }
   }, [theme, isPortalRoute, isAuthenticated])
 
-  const handleLoadingComplete = () => {
-    sessionStorage.setItem('aorangi-visited', 'true')
-    setIsInitialLoad(false)
-  }
-
   if (showDroneGame) {
     return (
       <Suspense fallback={<LoadingScreen />}>
@@ -90,10 +82,10 @@ function App() {
   return (
     <>
       {/* Initial loading screen - shows on first visit */}
-      {isInitialLoad && (
+      {isInitialLoading && (
         <InitialLoadingScreen
           minimumDuration={2200}
-          onComplete={handleLoadingComplete}
+          onComplete={setLoadingComplete}
         />
       )}
 
