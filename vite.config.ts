@@ -60,7 +60,7 @@ export default defineConfig({
       '@': path.resolve(__dirname, './src')
     }
   },
-  base: '/Aorangi/', // For GitHub Pages deployment
+  base: '/', // Custom domain at root
   build: {
     rollupOptions: {
       output: {
