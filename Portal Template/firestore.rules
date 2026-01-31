@@ -1,0 +1,138 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Helper functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function getUserData() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
+    }
+
+    function userExists() {
+      return exists(/databases/$(database)/documents/users/$(request.auth.uid));
+    }
+
+    function isAdmin() {
+      return isAuthenticated() && userExists() && getUserData().role == 'admin';
+    }
+
+    function isLead() {
+      return isAuthenticated() && userExists() && getUserData().role in ['admin', 'lead'];
+    }
+
+    function isTeamMember() {
+      return isAuthenticated() && userExists();
+    }
+
+    function isOwner(userId) {
+      return request.auth.uid == userId;
+    }
+
+    // Users collection
+    match /users/{userId} {
+      // Anyone authenticated can read users (for team directory)
+      allow read: if isAuthenticated();
+      // Users can create their own profile, OR admins can create for others
+      allow create: if (request.auth != null && request.auth.uid == userId) || isAdmin();
+      // Users can update their own profile, admins can update anyone
+      allow update: if isOwner(userId) || isAdmin();
+      // Only admins can delete users
+      allow delete: if isAdmin();
+    }
+
+    // Events collection
+    match /events/{eventId} {
+      allow read: if isAuthenticated();
+      // Allow first admin to create events, then only admins
+      allow create: if isAuthenticated();
+      allow update, delete: if isAdmin();
+
+      // Tasks subcollection
+      match /tasks/{taskId} {
+        allow read: if isAuthenticated();
+        allow create, update: if isAuthenticated();
+        allow delete: if isLead();
+      }
+
+      // Schedule subcollection
+      match /schedule/{slotId} {
+        allow read: if isAuthenticated();
+        allow create, delete: if isLead();
+        allow update: if isAuthenticated(); // Allow users to confirm their assignments
+      }
+
+      // Content subcollection
+      match /content/{contentId} {
+        allow read: if isAuthenticated();
+        allow create, update: if isAuthenticated();
+        allow delete: if isLead();
+      }
+    }
+
+    // Equipment collection
+    match /equipment/{equipmentId} {
+      allow read: if isAuthenticated();
+      allow write: if isLead();
+    }
+
+    // Announcements collection
+    match /announcements/{announcementId} {
+      allow read: if isAuthenticated();
+      allow create: if isLead();
+      allow update: if isAuthenticated();
+      allow delete: if isAdmin();
+    }
+
+    // Ideas/Brainstorm collection
+    match /ideas/{ideaId} {
+      allow read: if isAuthenticated();
+      allow create, update: if isAuthenticated();
+      allow delete: if isOwner(resource.data.authorId) || isAdmin();
+    }
+
+    // FAQs collection
+    match /faqs/{faqId} {
+      allow read: if isAuthenticated();
+      allow write: if isAdmin();
+    }
+
+    // Invites collection
+    match /invites/{inviteCode} {
+      allow read: if true;  // Public read for validation
+      allow create: if isAdmin();
+      allow update: if true;  // Allow marking as used during registration
+      allow delete: if isAdmin();
+    }
+
+    // Channels collection (messaging)
+    match /channels/{channelId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated();
+      allow update: if isAuthenticated();
+      allow delete: if isAdmin();
+
+      // Messages subcollection
+      match /messages/{messageId} {
+        allow read: if isAuthenticated();
+        allow create: if isAuthenticated();
+        allow update: if isAuthenticated() && isOwner(resource.data.authorId);
+        allow delete: if isOwner(resource.data.authorId) || isAdmin();
+      }
+    }
+
+    // Global tasks collection (if not under events)
+    match /tasks/{taskId} {
+      allow read: if isAuthenticated();
+      allow create, update: if isAuthenticated();
+      allow delete: if isAdmin();
+    }
+
+    // Quick access items
+    match /quickAccess/{itemId} {
+      allow read: if isAuthenticated();
+      allow write: if isAuthenticated();
+    }
+  }
+}

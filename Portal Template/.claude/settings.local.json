@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(dir:*)",
+      "Bash(wc:*)",
+      "Bash(npm create:*)",
+      "Bash(npm install:*)",
+      "Bash(npm run build:*)",
+      "Bash(firebase deploy:*)",
+      "Bash(npx firebase deploy:*)",
+      "Bash(ls -la \"D:\\\\Github\\\\Clients\\\\Eastercamp\\\\app\\\\src\\\\stores\"\" 2>/dev/null || echo \"Stores directory not found \")",
+      "Bash(firebase auth:export:*)",
+      "Bash(curl:*)"
+    ]
+  }
+}
