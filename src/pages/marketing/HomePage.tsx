@@ -70,11 +70,11 @@ export default function HomePage() {
               muted
               loop
               playsInline
+              preload="auto"
               poster={heroVideo.poster}
               className="absolute inset-0 w-full h-full object-cover"
-            >
-              <source src={heroVideo.src} type="video/mp4" />
-            </video>
+              src={heroVideo.src}
+            />
             {/* Overlay gradient */}
             <div className="absolute inset-0 bg-gradient-to-b from-dark/70 via-dark/50 to-dark" />
           </motion.div>

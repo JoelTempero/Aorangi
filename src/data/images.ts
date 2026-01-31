@@ -41,8 +41,7 @@ export const images = {
 // Placeholder for hero video - user will provide
 export const heroVideo = {
   // Put your hero video file in /public/videos/hero.mp4
-  // Use relative path for GitHub Pages compatibility
-  src: './videos/hero.mp4',
+  src: '/videos/hero.mp4',
   poster: images.hero, // Fallback image while video loads
 }
 
