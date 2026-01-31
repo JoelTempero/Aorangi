@@ -15,20 +15,11 @@ const queryClient = new QueryClient({
   },
 })
 
-// Register service worker for PWA
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/sw.js').catch(() => {
-      // Service worker registration failed
-    })
-  })
-}
-
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <HelmetProvider>
       <QueryClientProvider client={queryClient}>
-        <BrowserRouter basename="/Aorangi">
+        <BrowserRouter>
           <App />
         </BrowserRouter>
       </QueryClientProvider>
