@@ -2,15 +2,23 @@ import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import type { Project, Deliverable, Invoice, Notification } from '../types'
 
+export type UserRole = 'client' | 'admin'
+
+interface PortalUser {
+  id: string
+  name: string
+  email: string
+  company: string
+  avatar?: string
+  role: UserRole
+}
+
 interface PortalState {
-  // User
-  user: {
-    id: string
-    name: string
-    email: string
-    company: string
-    avatar?: string
-  } | null
+  // Auth
+  isAuthenticated: boolean
+  user: PortalUser | null
+  login: (role: UserRole) => void
+  logout: () => void
 
   // Projects
   projects: Project[]
@@ -33,12 +41,32 @@ interface PortalState {
 
   // Demo mode
   isDemoMode: boolean
-  initDemoData: () => void
+  initDemoData: (role: UserRole) => void
+  clearData: () => void
+}
+
+// Demo users
+const demoUsers: Record<UserRole, PortalUser> = {
+  client: {
+    id: 'demo-client',
+    name: 'Sarah Mitchell',
+    email: 'sarah@canterburyconstruction.co.nz',
+    company: 'Canterbury Construction Ltd',
+    role: 'client',
+  },
+  admin: {
+    id: 'demo-admin',
+    name: 'James Wilson',
+    email: 'james@aorangiaerials.nz',
+    company: 'Aorangi Aerials',
+    role: 'admin',
+  },
 }
 
 export const usePortalStore = create<PortalState>()(
   persist(
     (set, get) => ({
+      isAuthenticated: false,
       user: null,
       projects: [],
       activeProject: null,
@@ -47,6 +75,25 @@ export const usePortalStore = create<PortalState>()(
       notifications: [],
       unreadCount: 0,
       isDemoMode: true,
+
+      login: (role) => {
+        const user = demoUsers[role]
+        set({ isAuthenticated: true, user })
+        get().initDemoData(role)
+      },
+
+      logout: () => {
+        set({
+          isAuthenticated: false,
+          user: null,
+          projects: [],
+          activeProject: null,
+          deliverables: [],
+          invoices: [],
+          notifications: [],
+          unreadCount: 0,
+        })
+      },
 
       setActiveProject: (project) => set({ activeProject: project }),
 
@@ -88,26 +135,38 @@ export const usePortalStore = create<PortalState>()(
         }))
       },
 
-      initDemoData: () => {
+      initDemoData: (role) => {
         const { projects } = get()
         if (projects.length > 0) return // Already initialized
 
         // Import demo data
-        import('../data/demoData').then(({ demoData }) => {
+        import('../data/demoData').then(({ demoData, adminDemoData }) => {
+          const data = role === 'admin' ? adminDemoData : demoData
           set({
-            user: demoData.user,
-            projects: demoData.projects,
-            deliverables: demoData.deliverables,
-            invoices: demoData.invoices,
-            notifications: demoData.notifications,
-            unreadCount: demoData.notifications.filter((n) => !n.read).length,
+            projects: data.projects,
+            deliverables: data.deliverables,
+            invoices: data.invoices,
+            notifications: data.notifications,
+            unreadCount: data.notifications.filter((n) => !n.read).length,
           })
+        })
+      },
+
+      clearData: () => {
+        set({
+          projects: [],
+          activeProject: null,
+          deliverables: [],
+          invoices: [],
+          notifications: [],
+          unreadCount: 0,
         })
       },
     }),
     {
       name: 'aorangi-portal',
       partialize: (state) => ({
+        isAuthenticated: state.isAuthenticated,
         user: state.user,
         isDemoMode: state.isDemoMode,
       }),

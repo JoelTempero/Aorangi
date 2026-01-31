@@ -1,4 +1,4 @@
-import { Routes, Route, useLocation } from 'react-router-dom'
+import { Routes, Route, useLocation, Navigate } from 'react-router-dom'
 import { AnimatePresence } from 'framer-motion'
 import { Suspense, lazy, useEffect } from 'react'
 
@@ -12,6 +12,7 @@ import { ParticlesBackground } from './components/effects/ParticlesBackground'
 import { ScrollProgress } from './components/effects/ScrollProgress'
 import { CommandPalette } from './components/ui/CommandPalette'
 import { useThemeStore } from './stores/themeStore'
+import { usePortalStore } from './stores/portalStore'
 import { useKonamiCode } from './hooks/useKonamiCode'
 
 // Lazy load pages for code splitting
@@ -25,6 +26,7 @@ const PortfolioPage = lazy(() => import('./pages/marketing/PortfolioPage'))
 const QuotePage = lazy(() => import('./pages/marketing/QuotePage'))
 
 // Portal pages
+const PortalLogin = lazy(() => import('./pages/portal/LoginPage'))
 const PortalDashboard = lazy(() => import('./pages/portal/DashboardPage'))
 const PortalProjects = lazy(() => import('./pages/portal/ProjectsPage'))
 const PortalProjectDetail = lazy(() => import('./pages/portal/ProjectDetailPage'))
@@ -35,18 +37,36 @@ const PortalSupport = lazy(() => import('./pages/portal/SupportPage'))
 // Easter egg
 const DroneGame = lazy(() => import('./pages/DroneGame'))
 
+// Protected route wrapper
+function ProtectedRoute({ children }: { children: React.ReactNode }) {
+  const { isAuthenticated } = usePortalStore()
+
+  if (!isAuthenticated) {
+    return <Navigate to="/portal" replace />
+  }
+
+  return <>{children}</>
+}
+
 function App() {
   const location = useLocation()
   const { theme, initTheme } = useThemeStore()
+  const { isAuthenticated } = usePortalStore()
   const showDroneGame = useKonamiCode()
+  const isPortalRoute = location.pathname.startsWith('/portal')
 
   useEffect(() => {
     initTheme()
   }, [initTheme])
 
+  // Only apply theme to portal pages
   useEffect(() => {
-    document.documentElement.setAttribute('data-theme', theme)
-  }, [theme])
+    if (isPortalRoute && isAuthenticated) {
+      document.documentElement.setAttribute('data-theme', theme)
+    } else {
+      document.documentElement.setAttribute('data-theme', 'dark')
+    }
+  }, [theme, isPortalRoute, isAuthenticated])
 
   if (showDroneGame) {
     return (
@@ -77,14 +97,32 @@ function App() {
               <Route path="/quote" element={<QuotePage />} />
             </Route>
 
-            {/* Portal Routes */}
-            <Route path="/portal" element={<PortalLayout />}>
+            {/* Portal Login (public) */}
+            <Route path="/portal" element={<PortalLogin />} />
+
+            {/* Protected Portal Routes */}
+            <Route
+              path="/portal/dashboard"
+              element={
+                <ProtectedRoute>
+                  <PortalLayout />
+                </ProtectedRoute>
+              }
+            >
               <Route index element={<PortalDashboard />} />
-              <Route path="projects" element={<PortalProjects />} />
-              <Route path="projects/:id" element={<PortalProjectDetail />} />
-              <Route path="deliverables" element={<PortalDeliverables />} />
-              <Route path="invoices" element={<PortalInvoices />} />
-              <Route path="support" element={<PortalSupport />} />
+            </Route>
+            <Route
+              element={
+                <ProtectedRoute>
+                  <PortalLayout />
+                </ProtectedRoute>
+              }
+            >
+              <Route path="/portal/projects" element={<PortalProjects />} />
+              <Route path="/portal/projects/:id" element={<PortalProjectDetail />} />
+              <Route path="/portal/deliverables" element={<PortalDeliverables />} />
+              <Route path="/portal/invoices" element={<PortalInvoices />} />
+              <Route path="/portal/support" element={<PortalSupport />} />
             </Route>
           </Routes>
         </Suspense>

@@ -5,14 +5,13 @@ import {
   Menu,
   X,
   ChevronDown,
-  Sun,
-  Moon,
   Search,
   Phone,
+  User,
 } from 'lucide-react'
-import { useThemeStore } from '@/stores/themeStore'
 import { useCommandPaletteStore } from '@/stores/commandPaletteStore'
 import { services } from '@/data/services'
+import { images } from '@/data/images'
 import { cn } from '@/lib/utils'
 
 const navigation = [
@@ -37,7 +36,6 @@ export function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null)
   const location = useLocation()
-  const { theme, setTheme } = useThemeStore()
   const openCommandPalette = useCommandPaletteStore((s) => s.open)
 
   useEffect(() => {
@@ -54,10 +52,6 @@ export function Header() {
     setActiveDropdown(null)
   }, [location.pathname])
 
-  const toggleTheme = () => {
-    setTheme(theme === 'dark' ? 'light' : 'dark')
-  }
-
   return (
     <motion.header
       className={cn(
@@ -73,10 +67,12 @@ export function Header() {
       <div className="container mx-auto px-4">
         <nav className="flex items-center justify-between">
           {/* Logo */}
-          <Link to="/" className="flex items-center gap-2">
-            <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-accent-blue to-accent-purple flex items-center justify-center">
-              <span className="font-display font-bold text-white text-lg">A</span>
-            </div>
+          <Link to="/" className="flex items-center gap-3">
+            <img
+              src={images.logo}
+              alt="Aorangi Aerials"
+              className="w-10 h-10 object-contain"
+            />
             <div className="hidden sm:block">
               <span className="font-display font-bold text-white text-lg">Aorangi</span>
               <span className="text-white/60 text-sm ml-1">Aerials</span>
@@ -145,14 +141,14 @@ export function Header() {
               <Search className="w-5 h-5" />
             </button>
 
-            {/* Theme toggle */}
-            <button
-              onClick={toggleTheme}
-              className="p-2 rounded-lg text-white/60 hover:text-white hover:bg-white/5 transition-colors"
-              aria-label="Toggle theme"
+            {/* Client Portal */}
+            <Link
+              to="/portal"
+              className="hidden sm:flex items-center gap-2 px-4 py-2 text-white/70 hover:text-white hover:bg-white/5 text-sm font-medium rounded-lg transition-colors"
             >
-              {theme === 'dark' ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
-            </button>
+              <User className="w-4 h-4" />
+              Client Portal
+            </Link>
 
             {/* CTA Button */}
             <Link
@@ -213,6 +209,16 @@ export function Header() {
                     )}
                   </div>
                 ))}
+
+                {/* Mobile Client Portal Link */}
+                <Link
+                  to="/portal"
+                  className="flex items-center gap-2 px-4 py-3 text-white/70 hover:text-white rounded-lg hover:bg-white/5 transition-colors"
+                >
+                  <User className="w-4 h-4" />
+                  Client Portal
+                </Link>
+
                 <Link
                   to="/quote"
                   className="mt-4 flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-accent-blue to-accent-purple text-white font-medium rounded-lg"

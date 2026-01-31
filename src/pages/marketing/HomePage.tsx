@@ -9,15 +9,14 @@ import {
   Cpu,
   Phone,
   Play,
-  ChevronDown,
 } from 'lucide-react'
-import { DroneScene } from '@/components/three/DroneScene'
 import { WeatherWidget } from '@/components/sections/WeatherWidget'
 import { ServiceCard } from '@/components/sections/ServiceCard'
 import { PageTransition, fadeInUp, staggerContainer } from '@/components/effects/PageTransition'
 import { Button } from '@/components/ui/Button'
 import { services } from '@/data/services'
 import { companyInfo, whyChooseUs, testimonials } from '@/data/content'
+import { images, heroVideo } from '@/data/images'
 import { cn } from '@/lib/utils'
 
 const iconMap: Record<string, React.ReactNode> = {
@@ -52,20 +51,28 @@ export default function HomePage() {
         ref={heroRef}
         className="relative min-h-screen flex items-center justify-center overflow-hidden"
       >
-        {/* Background gradient */}
-        <div className="absolute inset-0 bg-gradient-to-b from-dark via-dark to-dark-lighter" />
-
-        {/* 3D Drone Scene */}
+        {/* Video Background */}
         <motion.div
           style={{ opacity: heroOpacity, scale: heroScale, y: heroY }}
           className="absolute inset-0 z-0"
         >
-          <DroneScene className="w-full h-full" />
+          <video
+            autoPlay
+            muted
+            loop
+            playsInline
+            poster={heroVideo.poster}
+            className="absolute inset-0 w-full h-full object-cover"
+          >
+            <source src={heroVideo.src} type="video/mp4" />
+          </video>
+          {/* Overlay gradient */}
+          <div className="absolute inset-0 bg-gradient-to-b from-dark/70 via-dark/50 to-dark" />
         </motion.div>
 
         {/* Content */}
         <div className="relative z-10 container mx-auto px-4 pt-24">
-          <div className="max-w-4xl mx-auto text-center">
+          <div className="max-w-5xl mx-auto text-center">
             <motion.div
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
@@ -77,9 +84,17 @@ export default function HomePage() {
                 <span className="text-accent-blue text-sm font-medium">CAA Part 102 Certified</span>
               </div>
 
-              {/* Headline */}
-              <h1 className="heading-display text-5xl sm:text-6xl lg:text-7xl text-white mb-6">
-                <span className="text-gradient">Precision</span> From Above
+              {/* Headline - Each word on its own row */}
+              <h1 className="heading-display text-white mb-8">
+                <span className="block text-6xl sm:text-7xl lg:text-8xl xl:text-9xl text-gradient">
+                  Precision
+                </span>
+                <span className="block text-6xl sm:text-7xl lg:text-8xl xl:text-9xl">
+                  From
+                </span>
+                <span className="block text-6xl sm:text-7xl lg:text-8xl xl:text-9xl">
+                  Above
+                </span>
               </h1>
 
               <p className="text-white/70 text-lg sm:text-xl max-w-2xl mx-auto mb-8">
@@ -108,23 +123,6 @@ export default function HomePage() {
               </div>
             </motion.div>
           </div>
-
-          {/* Scroll indicator */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 1 }}
-            className="absolute bottom-8 left-1/2 -translate-x-1/2"
-          >
-            <motion.div
-              animate={{ y: [0, 10, 0] }}
-              transition={{ duration: 1.5, repeat: Infinity }}
-              className="flex flex-col items-center gap-2 text-white/40"
-            >
-              <span className="text-xs uppercase tracking-wider">Scroll</span>
-              <ChevronDown className="w-5 h-5" />
-            </motion.div>
-          </motion.div>
         </div>
       </section>
 
@@ -177,7 +175,15 @@ export default function HomePage() {
 
       {/* Why Choose Us */}
       <section className="py-24 bg-dark relative overflow-hidden">
-        {/* Background decoration */}
+        {/* Background image */}
+        <div
+          className="absolute inset-0 opacity-10"
+          style={{
+            backgroundImage: `url(${images.servicesBackground})`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+          }}
+        />
         <div className="absolute top-0 right-0 w-1/2 h-full bg-gradient-to-l from-accent-blue/5 to-transparent" />
 
         <div className="container mx-auto px-4 relative">

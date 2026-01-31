@@ -291,3 +291,161 @@ export const demoData = {
     }
   ] as Notification[]
 }
+
+// Admin sees ALL clients and projects
+export const adminDemoData = {
+  projects: [
+    ...demoData.projects,
+    // Additional projects from other clients
+    {
+      id: 'proj-005',
+      name: 'Rolleston Industrial Park Survey',
+      client: 'Southern Land Developers',
+      status: 'in_progress' as const,
+      service: 'Surveying & Mapping',
+      location: 'Rolleston, Canterbury',
+      startDate: '2026-01-18',
+      endDate: '2026-02-20',
+      progress: 45,
+      description: 'Large-scale topographic survey for new industrial development zone.',
+      thumbnail: '/images/projects/rolleston-survey.webp',
+      deliverableCount: 4,
+      flightDate: '2026-01-20',
+      weather: 'Overcast, calm'
+    },
+    {
+      id: 'proj-006',
+      name: 'Akaroa Harbour Inspection',
+      client: 'Environment Canterbury',
+      status: 'completed' as const,
+      service: 'Asset Inspection',
+      location: 'Akaroa, Banks Peninsula',
+      startDate: '2026-01-10',
+      endDate: '2026-01-12',
+      progress: 100,
+      description: 'Coastal erosion assessment and cliff face inspection using high-resolution imaging.',
+      thumbnail: '/images/projects/akaroa-inspection.webp',
+      deliverableCount: 18,
+      flightDate: '2026-01-11',
+      weather: 'Clear, light breeze'
+    },
+    {
+      id: 'proj-007',
+      name: 'Waimakariri Bridge Inspection',
+      client: 'NZTA',
+      status: 'review' as const,
+      service: 'Asset Inspection',
+      location: 'Waimakariri, Canterbury',
+      startDate: '2026-01-22',
+      endDate: '2026-01-28',
+      progress: 85,
+      description: 'Structural inspection of bridge pillars and deck using close-range aerial photography.',
+      thumbnail: '/images/projects/bridge-inspection.webp',
+      deliverableCount: 32,
+      flightDate: '2026-01-25',
+      weather: 'Sunny, 12km/h wind'
+    },
+    {
+      id: 'proj-008',
+      name: 'Ashburton Farm Crop Analysis',
+      client: 'Ashburton Farming Co.',
+      status: 'pending' as const,
+      service: 'Agriculture & Farming',
+      location: 'Ashburton, Canterbury',
+      startDate: '2026-02-05',
+      progress: 0,
+      description: 'Multispectral crop health analysis across 500 hectares of dairy support land.',
+      thumbnail: '/images/projects/crop-analysis.webp',
+      deliverableCount: 0
+    }
+  ] as Project[],
+
+  deliverables: [
+    ...demoData.deliverables,
+    // Additional deliverables
+    {
+      id: 'del-009',
+      projectId: 'proj-006',
+      name: 'Cliff Face Orthomosaic',
+      type: 'image' as const,
+      status: 'approved' as const,
+      fileUrl: '/deliverables/akaroa-ortho.tiff',
+      thumbnailUrl: '/images/deliverables/akaroa-thumb.webp',
+      fileSize: 320000000,
+      uploadedAt: '2026-01-12T10:00:00Z',
+      approvedAt: '2026-01-13T14:00:00Z'
+    },
+    {
+      id: 'del-010',
+      projectId: 'proj-007',
+      name: 'Bridge Pillar Report',
+      type: 'document' as const,
+      status: 'ready' as const,
+      fileUrl: '/deliverables/bridge-report.pdf',
+      thumbnailUrl: '/images/deliverables/bridge-report-thumb.webp',
+      fileSize: 25000000,
+      uploadedAt: '2026-01-27T15:00:00Z'
+    }
+  ] as Deliverable[],
+
+  invoices: [
+    ...demoData.invoices,
+    {
+      id: 'inv-004',
+      invoiceNumber: 'INV-2026-0038',
+      projectId: 'proj-006',
+      projectName: 'Akaroa Harbour Inspection',
+      status: 'paid' as const,
+      amount: 3200.00,
+      tax: 480.00,
+      total: 3680.00,
+      issuedDate: '2026-01-13',
+      dueDate: '2026-01-27',
+      paidDate: '2026-01-20',
+      items: [
+        { description: 'Coastal Aerial Survey - Full Day', quantity: 1, unitPrice: 1800.00, total: 1800.00 },
+        { description: 'Cliff Face Analysis & Reporting', quantity: 1, unitPrice: 900.00, total: 900.00 },
+        { description: 'High-Resolution Orthomosaic Processing', quantity: 1, unitPrice: 500.00, total: 500.00 }
+      ]
+    },
+    {
+      id: 'inv-005',
+      invoiceNumber: 'INV-2026-0052',
+      projectId: 'proj-007',
+      projectName: 'Waimakariri Bridge Inspection',
+      status: 'draft' as const,
+      amount: 5500.00,
+      tax: 825.00,
+      total: 6325.00,
+      issuedDate: '2026-01-30',
+      dueDate: '2026-02-13',
+      items: [
+        { description: 'Bridge Inspection - 2 Days', quantity: 2, unitPrice: 2000.00, total: 4000.00 },
+        { description: 'Structural Analysis Report', quantity: 1, unitPrice: 1200.00, total: 1200.00 },
+        { description: 'Travel & Equipment', quantity: 1, unitPrice: 300.00, total: 300.00 }
+      ]
+    }
+  ] as Invoice[],
+
+  notifications: [
+    ...demoData.notifications,
+    {
+      id: 'notif-005',
+      type: 'system' as const,
+      title: 'New Client Enquiry',
+      message: 'New quote request from Selwyn District Council for roading assessment.',
+      read: false,
+      createdAt: '2026-01-30T08:30:00Z',
+      link: '/portal/quotes'
+    },
+    {
+      id: 'notif-006',
+      type: 'project_update' as const,
+      title: 'Weather Alert',
+      message: 'High winds forecast for Feb 1-2. Port Hills flight may need rescheduling.',
+      read: false,
+      createdAt: '2026-01-30T07:00:00Z',
+      link: '/portal/projects/proj-004'
+    }
+  ] as Notification[]
+}

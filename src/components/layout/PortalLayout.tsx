@@ -13,36 +13,62 @@ import {
   Menu,
   X,
   ChevronRight,
-  Settings,
+  Sun,
+  Moon,
+  Users,
+  BarChart3,
+  Shield,
 } from 'lucide-react'
 import { usePortalStore } from '@/stores/portalStore'
+import { useThemeStore } from '@/stores/themeStore'
+import { images } from '@/data/images'
 import { cn } from '@/lib/utils'
 
-const sidebarNav = [
-  { name: 'Dashboard', href: '/portal', icon: LayoutDashboard },
-  { name: 'Projects', href: '/portal/projects', icon: FolderOpen },
-  { name: 'Deliverables', href: '/portal/deliverables', icon: FileDown },
-  { name: 'Invoices', href: '/portal/invoices', icon: Receipt },
-  { name: 'Support', href: '/portal/support', icon: HeadphonesIcon },
-]
+// Navigation items - some are admin only
+const getSidebarNav = (isAdmin: boolean) => {
+  const baseNav = [
+    { name: 'Dashboard', href: '/portal/dashboard', icon: LayoutDashboard },
+    { name: 'Projects', href: '/portal/projects', icon: FolderOpen },
+    { name: 'Deliverables', href: '/portal/deliverables', icon: FileDown },
+    { name: 'Invoices', href: '/portal/invoices', icon: Receipt },
+    { name: 'Support', href: '/portal/support', icon: HeadphonesIcon },
+  ]
+
+  if (isAdmin) {
+    // Add admin-only items
+    return [
+      ...baseNav.slice(0, 2),
+      { name: 'All Clients', href: '/portal/clients', icon: Users, adminOnly: true },
+      { name: 'Analytics', href: '/portal/analytics', icon: BarChart3, adminOnly: true },
+      ...baseNav.slice(2),
+    ]
+  }
+
+  return baseNav
+}
 
 export default function PortalLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [notificationsOpen, setNotificationsOpen] = useState(false)
   const location = useLocation()
   const navigate = useNavigate()
-  const { user, notifications, unreadCount, markAsRead, markAllAsRead, initDemoData } = usePortalStore()
+  const { user, notifications, unreadCount, markAsRead, markAllAsRead, logout } = usePortalStore()
+  const { theme, setTheme } = useThemeStore()
 
-  useEffect(() => {
-    initDemoData()
-  }, [initDemoData])
+  const isAdmin = user?.role === 'admin'
+  const sidebarNav = getSidebarNav(isAdmin)
 
   useEffect(() => {
     setSidebarOpen(false)
   }, [location.pathname])
 
   const handleLogout = () => {
-    navigate('/')
+    logout()
+    navigate('/portal')
+  }
+
+  const toggleTheme = () => {
+    setTheme(theme === 'dark' ? 'light' : 'dark')
   }
 
   return (
@@ -51,19 +77,31 @@ export default function PortalLayout() {
       <aside className="hidden lg:flex flex-col w-64 bg-dark-lighter border-r border-dark-border">
         {/* Logo */}
         <div className="p-6 border-b border-dark-border">
-          <Link to="/" className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-accent-blue to-accent-purple flex items-center justify-center">
-              <span className="font-display font-bold text-white text-sm">A</span>
-            </div>
+          <Link to="/" className="flex items-center gap-3">
+            <img
+              src={images.logo}
+              alt="Aorangi Aerials"
+              className="w-8 h-8 object-contain"
+            />
             <span className="font-display font-bold text-white">Aorangi</span>
           </Link>
         </div>
+
+        {/* Role Badge */}
+        {isAdmin && (
+          <div className="px-4 pt-4">
+            <div className="flex items-center gap-2 px-3 py-2 bg-accent-purple/10 border border-accent-purple/30 rounded-lg">
+              <Shield className="w-4 h-4 text-accent-purple" />
+              <span className="text-accent-purple text-xs font-medium">Admin View</span>
+            </div>
+          </div>
+        )}
 
         {/* Navigation */}
         <nav className="flex-1 p-4 space-y-1">
           {sidebarNav.map((item) => {
             const isActive = location.pathname === item.href ||
-              (item.href !== '/portal' && location.pathname.startsWith(item.href))
+              (item.href !== '/portal/dashboard' && location.pathname.startsWith(item.href))
 
             return (
               <Link
@@ -86,7 +124,12 @@ export default function PortalLayout() {
         {/* User section */}
         <div className="p-4 border-t border-dark-border">
           <div className="flex items-center gap-3 px-4 py-3">
-            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-accent-blue to-accent-purple flex items-center justify-center">
+            <div className={cn(
+              "w-10 h-10 rounded-full flex items-center justify-center",
+              isAdmin
+                ? "bg-gradient-to-br from-accent-purple to-accent-cyan"
+                : "bg-gradient-to-br from-accent-blue to-accent-purple"
+            )}>
               <span className="font-medium text-white text-sm">
                 {user?.name?.split(' ').map((n) => n[0]).join('') || 'U'}
               </span>
@@ -98,10 +141,10 @@ export default function PortalLayout() {
           </div>
           <button
             onClick={handleLogout}
-            className="w-full flex items-center gap-3 px-4 py-2 mt-2 rounded-lg text-white/60 hover:text-white hover:bg-white/5 transition-colors"
+            className="w-full flex items-center gap-3 px-4 py-2 mt-2 rounded-lg text-white/60 hover:text-red-400 hover:bg-red-500/10 transition-colors"
           >
             <LogOut className="w-4 h-4" />
-            <span className="text-sm">Back to Website</span>
+            <span className="text-sm">Sign Out</span>
           </button>
         </div>
       </aside>
@@ -126,9 +169,11 @@ export default function PortalLayout() {
             >
               <div className="p-4 flex items-center justify-between border-b border-dark-border">
                 <Link to="/" className="flex items-center gap-2">
-                  <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-accent-blue to-accent-purple flex items-center justify-center">
-                    <span className="font-display font-bold text-white text-sm">A</span>
-                  </div>
+                  <img
+                    src={images.logo}
+                    alt="Aorangi Aerials"
+                    className="w-8 h-8 object-contain"
+                  />
                   <span className="font-display font-bold text-white">Aorangi</span>
                 </Link>
                 <button
@@ -138,6 +183,16 @@ export default function PortalLayout() {
                   <X className="w-5 h-5" />
                 </button>
               </div>
+
+              {/* Role Badge - Mobile */}
+              {isAdmin && (
+                <div className="px-4 pt-4">
+                  <div className="flex items-center gap-2 px-3 py-2 bg-accent-purple/10 border border-accent-purple/30 rounded-lg">
+                    <Shield className="w-4 h-4 text-accent-purple" />
+                    <span className="text-accent-purple text-xs font-medium">Admin View</span>
+                  </div>
+                </div>
+              )}
 
               <nav className="p-4 space-y-1">
                 {sidebarNav.map((item) => {
@@ -160,6 +215,33 @@ export default function PortalLayout() {
                   )
                 })}
               </nav>
+
+              {/* User section - Mobile */}
+              <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-dark-border bg-dark-lighter">
+                <div className="flex items-center gap-3 px-2 py-2">
+                  <div className={cn(
+                    "w-10 h-10 rounded-full flex items-center justify-center",
+                    isAdmin
+                      ? "bg-gradient-to-br from-accent-purple to-accent-cyan"
+                      : "bg-gradient-to-br from-accent-blue to-accent-purple"
+                  )}>
+                    <span className="font-medium text-white text-sm">
+                      {user?.name?.split(' ').map((n) => n[0]).join('') || 'U'}
+                    </span>
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-white font-medium text-sm truncate">{user?.name}</p>
+                    <p className="text-white/40 text-xs truncate">{user?.role === 'admin' ? 'Admin' : 'Client'}</p>
+                  </div>
+                </div>
+                <button
+                  onClick={handleLogout}
+                  className="w-full flex items-center gap-3 px-4 py-2 mt-2 rounded-lg text-white/60 hover:text-red-400 hover:bg-red-500/10 transition-colors"
+                >
+                  <LogOut className="w-4 h-4" />
+                  <span className="text-sm">Sign Out</span>
+                </button>
+              </div>
             </motion.aside>
           </>
         )}
@@ -179,10 +261,10 @@ export default function PortalLayout() {
 
             {/* Breadcrumb */}
             <div className="hidden sm:flex items-center gap-2 text-sm">
-              <Link to="/portal" className="text-white/40 hover:text-white transition-colors">
+              <Link to="/portal/dashboard" className="text-white/40 hover:text-white transition-colors">
                 Portal
               </Link>
-              {location.pathname !== '/portal' && (
+              {location.pathname !== '/portal/dashboard' && (
                 <>
                   <ChevronRight className="w-4 h-4 text-white/20" />
                   <span className="text-white capitalize">
@@ -194,6 +276,15 @@ export default function PortalLayout() {
           </div>
 
           <div className="flex items-center gap-2">
+            {/* Theme toggle */}
+            <button
+              onClick={toggleTheme}
+              className="p-2 rounded-lg text-white/60 hover:text-white hover:bg-white/5 transition-colors"
+              aria-label="Toggle theme"
+            >
+              {theme === 'dark' ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+            </button>
+
             {/* Notifications */}
             <div className="relative">
               <button
@@ -253,13 +344,13 @@ export default function PortalLayout() {
               </AnimatePresence>
             </div>
 
-            {/* Settings */}
-            <button className="p-2 rounded-lg text-white/60 hover:text-white hover:bg-white/5 transition-colors">
-              <Settings className="w-5 h-5" />
-            </button>
-
             {/* User avatar - mobile */}
-            <div className="lg:hidden w-8 h-8 rounded-full bg-gradient-to-br from-accent-blue to-accent-purple flex items-center justify-center">
+            <div className={cn(
+              "lg:hidden w-8 h-8 rounded-full flex items-center justify-center",
+              isAdmin
+                ? "bg-gradient-to-br from-accent-purple to-accent-cyan"
+                : "bg-gradient-to-br from-accent-blue to-accent-purple"
+            )}>
               <User className="w-4 h-4 text-white" />
             </div>
           </div>
