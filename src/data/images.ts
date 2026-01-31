@@ -41,6 +41,59 @@ export const images = {
 // Placeholder for hero video - user will provide
 export const heroVideo = {
   // Put your hero video file in /public/videos/hero.mp4
-  src: '/videos/hero.mp4',
+  // Use relative path for GitHub Pages compatibility
+  src: './videos/hero.mp4',
   poster: images.hero, // Fallback image while video loads
+}
+
+// Extended gallery images for portfolio page
+export const galleryImages = [
+  // Original portfolio images
+  ...images.portfolio,
+  // Additional high-res images
+  'https://assets.zyrosite.com/cdn-cgi/image/format=auto,w=1200,fit=crop/AE0aowDkkRUp5gQz/dji_20260124101358_0100_d-xknXl5Tb6QnV9H5S.jpg',
+  'https://assets.zyrosite.com/cdn-cgi/image/format=auto,w=1200,fit=crop/AE0aowDkkRUp5gQz/dji_20251229152449_0079_d-hQVF0Jw97Vc8b1ac.jpg',
+  'https://assets.zyrosite.com/cdn-cgi/image/format=auto,w=1200,fit=crop/AE0aowDkkRUp5gQz/dji_20251230191012_0118_d-DQmuhs4DhJL3fumv.jpg',
+  'https://assets.zyrosite.com/cdn-cgi/image/format=auto,w=1200,fit=crop/AE0aowDkkRUp5gQz/_mg_9231-F6dzRebf1688OZWL.jpg',
+  'https://assets.zyrosite.com/cdn-cgi/image/format=auto,w=1200,fit=crop/AE0aowDkkRUp5gQz/lidar-3-d9543v4G2XS6Oayq.jpg',
+  'https://assets.zyrosite.com/cdn-cgi/image/format=auto,w=1200,fit=crop/AE0aowDkkRUp5gQz/dji_20260124100906_0089_d-uzTFQNne7KNNuNwn.jpg',
+]
+
+// Service-specific images for detail pages
+export const serviceImages: Record<string, string[]> = {
+  'aerial-photography': [
+    images.portfolio[0],
+    images.portfolio[3],
+    images.hero,
+  ],
+  'surveying-mapping': [
+    images.portfolio[1],
+    images.portfolio[4],
+    images.servicesBackground,
+  ],
+  'asset-inspections': [
+    images.portfolio[2],
+    images.portfolio[0],
+    images.portfolio[4],
+  ],
+  'thermal-imaging': [
+    images.portfolio[1],
+    images.portfolio[3],
+    images.portfolio[2],
+  ],
+  'surveillance-monitoring': [
+    images.portfolio[4],
+    images.portfolio[0],
+    images.portfolio[1],
+  ],
+  'heavy-lift': [
+    images.portfolio[2],
+    images.portfolio[4],
+    images.portfolio[3],
+  ],
+  'web-gis': [
+    images.portfolio[1],
+    images.portfolio[0],
+    images.portfolio[2],
+  ],
 }

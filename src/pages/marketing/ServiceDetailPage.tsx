@@ -1,20 +1,24 @@
+import { useState } from 'react'
 import { useParams, Link, Navigate } from 'react-router-dom'
 import { Helmet } from 'react-helmet-async'
-import { motion } from 'framer-motion'
-import { ArrowRight, Check, ArrowLeft } from 'lucide-react'
+import { motion, AnimatePresence } from 'framer-motion'
+import { ArrowRight, Check, ArrowLeft, X, ZoomIn } from 'lucide-react'
 import { PageTransition, fadeInUp, staggerContainer } from '@/components/effects/PageTransition'
 import { Button } from '@/components/ui/Button'
 import { getServiceBySlug, services } from '@/data/services'
+import { serviceImages, images } from '@/data/images'
 
 export default function ServiceDetailPage() {
   const { slug } = useParams<{ slug: string }>()
   const service = slug ? getServiceBySlug(slug) : undefined
+  const [lightboxImage, setLightboxImage] = useState<string | null>(null)
 
   if (!service) {
     return <Navigate to="/services" replace />
   }
 
   const relatedServices = services.filter((s) => s.id !== service.id).slice(0, 3)
+  const serviceImgs = serviceImages[service.slug] || images.portfolio.slice(0, 3)
 
   return (
     <PageTransition>
@@ -25,7 +29,15 @@ export default function ServiceDetailPage() {
 
       {/* Hero */}
       <section className="pt-32 pb-16 bg-dark relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-b from-accent-blue/5 to-transparent" />
+        {/* Background image */}
+        <div className="absolute inset-0">
+          <img
+            src={serviceImgs[0]}
+            alt=""
+            className="w-full h-full object-cover opacity-20"
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-dark via-dark/90 to-dark" />
+        </div>
 
         <div className="container mx-auto px-4 relative">
           <Link
@@ -58,6 +70,48 @@ export default function ServiceDetailPage() {
               {service.description}
             </motion.p>
           </motion.div>
+        </div>
+      </section>
+
+      {/* Service Gallery */}
+      <section className="py-16 bg-dark">
+        <div className="container mx-auto px-4">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-center mb-12"
+          >
+            <h2 className="heading-display text-3xl text-white mb-4">See Our Work</h2>
+            <p className="text-white/60 max-w-2xl mx-auto">
+              Examples of our {service.shortName.toLowerCase()} projects across Canterbury.
+            </p>
+          </motion.div>
+
+          <div className="grid md:grid-cols-3 gap-4">
+            {serviceImgs.map((img, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: index * 0.1 }}
+                className="group relative aspect-[4/3] rounded-2xl overflow-hidden cursor-pointer"
+                onClick={() => setLightboxImage(img)}
+              >
+                <img
+                  src={img}
+                  alt={`${service.shortName} example ${index + 1}`}
+                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-dark/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                  <div className="w-12 h-12 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center">
+                    <ZoomIn className="w-6 h-6 text-white" />
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+          </div>
         </div>
       </section>
 
@@ -246,6 +300,35 @@ export default function ServiceDetailPage() {
           </div>
         </div>
       </section>
+
+      {/* Image Lightbox */}
+      <AnimatePresence>
+        {lightboxImage && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/95 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+            onClick={() => setLightboxImage(null)}
+          >
+            <button
+              onClick={() => setLightboxImage(null)}
+              className="absolute top-4 right-4 p-3 rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors z-10"
+            >
+              <X className="w-6 h-6" />
+            </button>
+            <motion.img
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              src={lightboxImage}
+              alt={service.shortName}
+              className="max-w-full max-h-[90vh] object-contain rounded-lg"
+              onClick={(e) => e.stopPropagation()}
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
     </PageTransition>
   )
 }

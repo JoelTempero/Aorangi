@@ -1,7 +1,7 @@
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { Helmet } from 'react-helmet-async'
 import { motion } from 'framer-motion'
-import { User, Shield, Building2, ArrowRight } from 'lucide-react'
+import { User, Shield, Building2, ArrowRight, ArrowLeft } from 'lucide-react'
 import { usePortalStore, type UserRole } from '@/stores/portalStore'
 import { PageTransition } from '@/components/effects/PageTransition'
 import { Button } from '@/components/ui/Button'
@@ -107,7 +107,7 @@ export default function LoginPage() {
                       <h3 className="text-white font-medium">Demo Admin</h3>
                       <ArrowRight className="w-4 h-4 text-white/40 group-hover:text-accent-purple group-hover:translate-x-1 transition-all" />
                     </div>
-                    <p className="text-white/60 text-sm mt-1">James Wilson</p>
+                    <p className="text-white/60 text-sm mt-1">Caleb Weir</p>
                     <p className="text-white/40 text-xs mt-0.5">Aorangi Aerials Staff</p>
                     <div className="mt-3 flex flex-wrap gap-2">
                       <span className="px-2 py-0.5 bg-dark-card rounded text-xs text-white/60">All clients</span>
@@ -155,12 +155,28 @@ export default function LoginPage() {
             </div>
           </motion.div>
 
+          {/* Back to Website */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.3 }}
+            className="mt-6"
+          >
+            <Link
+              to="/"
+              className="flex items-center justify-center gap-2 w-full py-3 text-white/60 hover:text-white transition-colors"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              <span>Back to Website</span>
+            </Link>
+          </motion.div>
+
           {/* Footer */}
           <motion.p
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ delay: 0.3 }}
-            className="text-center text-white/40 text-xs mt-6"
+            transition={{ delay: 0.4 }}
+            className="text-center text-white/40 text-xs mt-4"
           >
             Need access? Contact us at hello@aorangiaerials.nz
           </motion.p>

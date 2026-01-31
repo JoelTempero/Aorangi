@@ -56,8 +56,8 @@ const demoUsers: Record<UserRole, PortalUser> = {
   },
   admin: {
     id: 'demo-admin',
-    name: 'James Wilson',
-    email: 'james@aorangiaerials.nz',
+    name: 'Caleb Weir',
+    email: 'caleb@aorangiaerials.nz',
     company: 'Aorangi Aerials',
     role: 'admin',
   },

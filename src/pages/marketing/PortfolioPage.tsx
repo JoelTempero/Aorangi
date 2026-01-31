@@ -2,10 +2,11 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Helmet } from 'react-helmet-async'
 import { motion, AnimatePresence } from 'framer-motion'
-import { X, MapPin, Calendar, ArrowRight } from 'lucide-react'
+import { X, MapPin, Calendar, ArrowRight, ZoomIn, ChevronLeft, ChevronRight } from 'lucide-react'
 import { PageTransition, fadeInUp, staggerContainer } from '@/components/effects/PageTransition'
 import { Button } from '@/components/ui/Button'
 import { portfolioItems } from '@/data/content'
+import { galleryImages } from '@/data/images'
 import { cn } from '@/lib/utils'
 import { formatDate } from '@/lib/utils'
 
@@ -14,6 +15,7 @@ const categories = ['All', 'Aerial Photography', 'Surveying & Mapping', 'Asset I
 export default function PortfolioPage() {
   const [filter, setFilter] = useState('All')
   const [selectedItem, setSelectedItem] = useState<typeof portfolioItems[0] | null>(null)
+  const [galleryIndex, setGalleryIndex] = useState<number | null>(null)
 
   const filteredItems = filter === 'All'
     ? portfolioItems
@@ -217,8 +219,117 @@ export default function PortfolioPage() {
         )}
       </AnimatePresence>
 
-      {/* CTA */}
+      {/* Full Image Gallery */}
       <section className="py-16 bg-dark">
+        <div className="container mx-auto px-4">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-center mb-12"
+          >
+            <span className="text-accent-purple text-sm font-medium uppercase tracking-wider">
+              Gallery
+            </span>
+            <h2 className="heading-display text-3xl sm:text-4xl text-white mt-4 mb-4">
+              Aerial Perspectives
+            </h2>
+            <p className="text-white/60 max-w-2xl mx-auto">
+              A collection of our finest aerial captures from across Canterbury and beyond.
+            </p>
+          </motion.div>
+
+          {/* Masonry-style gallery grid */}
+          <div className="columns-1 sm:columns-2 lg:columns-3 gap-4 space-y-4">
+            {galleryImages.map((img, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: (index % 6) * 0.1 }}
+                className="group relative break-inside-avoid rounded-xl overflow-hidden cursor-pointer"
+                onClick={() => setGalleryIndex(index)}
+              >
+                <img
+                  src={img}
+                  alt={`Aerial capture ${index + 1}`}
+                  className="w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-dark/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end justify-center pb-6">
+                  <div className="flex items-center gap-2 text-white">
+                    <ZoomIn className="w-5 h-5" />
+                    <span className="text-sm font-medium">View Full Size</span>
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Gallery Lightbox */}
+      <AnimatePresence>
+        {galleryIndex !== null && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/95 backdrop-blur-sm z-50 flex items-center justify-center"
+            onClick={() => setGalleryIndex(null)}
+          >
+            {/* Close button */}
+            <button
+              onClick={() => setGalleryIndex(null)}
+              className="absolute top-4 right-4 p-3 rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors z-10"
+            >
+              <X className="w-6 h-6" />
+            </button>
+
+            {/* Previous button */}
+            <button
+              onClick={(e) => {
+                e.stopPropagation()
+                setGalleryIndex((prev) => (prev === 0 ? galleryImages.length - 1 : (prev ?? 0) - 1))
+              }}
+              className="absolute left-4 p-3 rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors z-10"
+            >
+              <ChevronLeft className="w-6 h-6" />
+            </button>
+
+            {/* Next button */}
+            <button
+              onClick={(e) => {
+                e.stopPropagation()
+                setGalleryIndex((prev) => (prev === galleryImages.length - 1 ? 0 : (prev ?? 0) + 1))
+              }}
+              className="absolute right-4 p-3 rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors z-10"
+            >
+              <ChevronRight className="w-6 h-6" />
+            </button>
+
+            {/* Image */}
+            <motion.img
+              key={galleryIndex}
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              src={galleryImages[galleryIndex]}
+              alt={`Gallery image ${galleryIndex + 1}`}
+              className="max-w-[90vw] max-h-[90vh] object-contain rounded-lg"
+              onClick={(e) => e.stopPropagation()}
+            />
+
+            {/* Image counter */}
+            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 px-4 py-2 bg-white/10 rounded-full text-white text-sm">
+              {galleryIndex + 1} / {galleryImages.length}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* CTA */}
+      <section className="py-16 bg-dark-lighter">
         <div className="container mx-auto px-4">
           <div className="bg-gradient-to-br from-accent-cyan/10 to-accent-blue/10 border border-dark-border rounded-2xl p-8 sm:p-12 text-center">
             <h2 className="heading-display text-3xl sm:text-4xl text-white mb-4">
